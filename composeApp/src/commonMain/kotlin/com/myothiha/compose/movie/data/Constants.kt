@@ -12,7 +12,6 @@ typealias POPULAR = Int
 
 object Constants {
     const val BASE_URL = "https://api.themoviedb.org/"
-    const val CLIENT_TOKEN = ""
     const val GET_NOW_PLAYING = "/movie/now_playing"
     const val GET_TOP_RATED = "/movie/top_rated"
     const val GET_UPCOMING = "/movie/upcoming"
