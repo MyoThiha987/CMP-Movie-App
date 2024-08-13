@@ -2,6 +2,7 @@ g*.iml
 .kotlin
 .gradle
 **/build/
+**/src/commonMain/kotlin/com/myothiha/compose/movie/data/Token.kt
 xcuserdata
 !src/**/build/
 local.properties
