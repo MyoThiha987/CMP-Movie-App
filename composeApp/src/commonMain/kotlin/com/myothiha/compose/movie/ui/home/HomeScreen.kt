@@ -58,6 +58,7 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.myothiha.compose.movie.domain.models.Movie
 import com.myothiha.compose.movie.ui.components.CarouselMovieView
+import io.github.aakira.napier.Napier
 import moviecomposemultiplatform.composeapp.generated.resources.Res
 import moviecomposemultiplatform.composeapp.generated.resources.ic_favourite
 import moviecomposemultiplatform.composeapp.generated.resources.ic_notification
@@ -280,9 +281,9 @@ fun CategoryAndContent(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalStdlibApi::class)
 @Composable
-fun <T> HorizontalItemView(
+fun <T : Any> HorizontalItemView(
     data: List<T>,
     arrangement: Arrangement.HorizontalOrVertical,
     alignment: Alignment.Vertical = Alignment.Top,
@@ -302,15 +303,14 @@ fun <T> HorizontalItemView(
     ) {
 
         itemsIndexed(
-            items = data,
-            key = { index, movie -> "${index}${movie}" }
+            items = data
         ) { index, it ->
             content(it)
         }
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalStdlibApi::class)
 @Composable
 fun HorizontalLargeItemView(
     data: List<Movie>,
@@ -325,8 +325,7 @@ fun HorizontalLargeItemView(
         flingBehavior = if (isFling) rememberSnapFlingBehavior(lazyListState = state) else ScrollableDefaults.flingBehavior()
     ) {
         itemsIndexed(
-            items = data,
-            key = { index, movie -> movie.id }
+            items = data
         ) { index, movie ->
             MovieItemLargeView(
                 onClickDetail = { onClickDetail(movie.id) },

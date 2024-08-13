@@ -11,6 +11,6 @@ import kotlinx.coroutines.flow.Flow
 interface MovieCacheDataSource {
     suspend fun saveMovies(data: List<MovieEntity>)
     fun retrieveCacheMovies(): Flow<List<Movie>>
-    suspend fun updateSaveMovie(movieId: Int, isLiked: Boolean, movieType: Int)
-    suspend fun retrieveBookmarkCacheMovies(): Flow<List<Movie>>
+    /*suspend fun updateSaveMovie(movieId: Int, isLiked: Boolean, movieType: Int)
+    suspend fun retrieveBookmarkCacheMovies(): Flow<List<Movie>>*/
 }

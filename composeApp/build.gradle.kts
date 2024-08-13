@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinxSerialization)
+    alias(libs.plugins.realm)
 }
 
 kotlin {
@@ -69,6 +70,7 @@ kotlin {
 
             implementation(libs.paging.compose.common)
             implementation(libs.napier)
+            implementation(libs.realm.base)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)

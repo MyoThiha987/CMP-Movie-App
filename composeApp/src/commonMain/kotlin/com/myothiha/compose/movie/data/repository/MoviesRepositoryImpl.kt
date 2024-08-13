@@ -6,8 +6,6 @@ import com.myothiha.compose.movie.data.Constants.NOW_PLAYING
 import com.myothiha.compose.movie.data.Constants.POPULAR
 import com.myothiha.compose.movie.data.Constants.TOP_RATED
 import com.myothiha.compose.movie.data.Constants.UPCOMING
-import com.myothiha.compose.movie.data.cache.MovieDatabase
-import com.myothiha.compose.movie.data.cache.dao.MovieDao
 import com.myothiha.compose.movie.data.datasources.MovieCacheDataSource
 import com.myothiha.compose.movie.data.datasources.MovieNetworkDataSource
 import com.myothiha.compose.movie.data.network.response.toDomain
@@ -15,11 +13,9 @@ import com.myothiha.compose.movie.data.network.response.toEntity
 import com.myothiha.compose.movie.domain.models.Movie
 import com.myothiha.compose.movie.domain.models.MovieFullDetail
 import com.myothiha.compose.movie.domain.repository.MovieRepository
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 /**
@@ -33,20 +29,20 @@ class MoviesRepositoryImpl(
     override suspend fun syncMovies() {
         coroutineScope {
             val upComing = async {
-                dataSource.fetchUpcomingMovies().map { it.toEntity(movieType = UPCOMING) }
+                dataSource.fetchUpcomingMovies().map { it.toEntity(movieCategory = UPCOMING) }
             }.await()
 
             val popular = async {
-                dataSource.fetchPopularMovies(page = 1).map { it.toEntity(movieType = POPULAR) }
+                dataSource.fetchPopularMovies(page = 1).map { it.toEntity(movieCategory = POPULAR) }
             }.await()
 
             val topRated = async {
-                dataSource.fetchTopRatedMovies(page = 1).map { it.toEntity(movieType = TOP_RATED) }
+                dataSource.fetchTopRatedMovies(page = 1).map { it.toEntity(movieCategory = TOP_RATED) }
             }.await()
 
             val nowPlaying = async {
                 dataSource.fetchNowPlayingMovies(page = 1)
-                    .map { it.toEntity(movieType = NOW_PLAYING) }
+                    .map { it.toEntity(movieCategory = NOW_PLAYING) }
             }.await()
 
             val data = upComing + popular + topRated + nowPlaying

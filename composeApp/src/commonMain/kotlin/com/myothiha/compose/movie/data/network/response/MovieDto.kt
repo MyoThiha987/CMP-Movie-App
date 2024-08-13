@@ -170,38 +170,34 @@ fun CastDto.toDomain(): Cast {
     }
 }
 
-fun MovieDto.toEntity(movieType: Int): MovieEntity {
-    this.apply {
-        return MovieEntity(
-            id = id.orZero(),
-            originalTitle = originalTitle.orEmpty(),
-            overview = overview.orEmpty(),
-            popularity = popularity.orZero(),
-            backdropPath = backdropPath.orEmpty(),
-            posterPath = posterPath.orEmpty(),
-            releaseDate = releaseDate.orEmpty(),
-            voteAverage = voteAverage.orZero(),
-            voteCount = voteCount.orZero(),
-            movieType = movieType,
-            isLiked = isLiked.orFalse()
-        )
+fun MovieDto.toEntity(movieCategory: Int): MovieEntity {
+    return MovieEntity().apply {
+        id = this@toEntity.id.orZero()
+        originalTitle = this@toEntity.originalTitle.orEmpty()
+        overview = this@toEntity.overview.orEmpty()
+        popularity = this@toEntity.popularity.orZero()
+        backdropPath = this@toEntity.backdropPath.orEmpty()
+        posterPath = this@toEntity.posterPath.orEmpty()
+        releaseDate = this@toEntity.releaseDate.orEmpty()
+        voteAverage = this@toEntity.voteAverage.orZero()
+        voteCount = this@toEntity.voteCount.orZero()
+        movieType = movieCategory
+        isLiked = this@toEntity.isLiked.orFalse()
     }
 }
 
 fun MovieEntity.toDomain(): Movie {
-    this.apply {
-        return Movie(
-            id = id,
-            originalTitle = originalTitle,
-            overview = overview,
-            popularity = popularity,
-            backdropPath = backdropPath,
-            posterPath = posterPath,
-            releaseDate = releaseDate,
-            voteAverage = voteAverage,
-            voteCount = voteCount,
-            movieType = movieType,
-            isLiked = isLiked.orFalse()
-        )
-    }
+    return Movie(
+        id = id,
+        originalTitle = originalTitle.orEmpty(),
+        overview = overview.orEmpty(),
+        popularity = popularity,
+        backdropPath = backdropPath.orEmpty(),
+        posterPath = posterPath.orEmpty(),
+        releaseDate = releaseDate.orEmpty(),
+        voteAverage = voteAverage,
+        voteCount = voteCount,
+        movieType = movieType,
+        isLiked = isLiked.orFalse()
+    )
 }

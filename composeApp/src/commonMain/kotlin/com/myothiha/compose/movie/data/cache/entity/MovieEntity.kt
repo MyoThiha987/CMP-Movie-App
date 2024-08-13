@@ -1,25 +1,26 @@
 package com.myothiha.compose.movie.data.cache.entity
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import io.realm.kotlin.types.RealmObject
+import io.realm.kotlin.types.annotations.PrimaryKey
+import org.mongodb.kbson.ObjectId
+
 
 /**
  * @Author Liam
  * Created at 12/Aug/2024
  */
-@Entity(tableName = "movies")
-data class MovieEntity(
-    @PrimaryKey(autoGenerate = true)
-    val autoId: Int? = null,
-    val id: Int,
-    val originalTitle: String,
-    val overview: String,
-    val popularity: Double,
-    val backdropPath: String,
-    val posterPath: String,
-    val releaseDate: String,
-    val voteAverage: Double,
-    val voteCount: Int,
-    val movieType: Int,
-    var isLiked: Boolean
-)
+class MovieEntity : RealmObject {
+    @PrimaryKey
+    var autoId: ObjectId = ObjectId()
+    var id: Int = 0
+    var originalTitle: String? = null
+    var overview: String? = null
+    var popularity: Double = 0.0
+    var backdropPath: String ?= null
+    var posterPath: String ?= null
+    var releaseDate: String? = null
+    var voteAverage: Double = 0.0
+    var voteCount: Int = 0
+    var movieType: Int = 0
+    var isLiked: Boolean = false
+}

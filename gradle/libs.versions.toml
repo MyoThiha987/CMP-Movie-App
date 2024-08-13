@@ -23,7 +23,7 @@ coil3 = "3.0.0-alpha06"
 compose-foundation = "1.7.0-beta04"
 pagingCommonVersion = "3.3.0-alpha02-0.4.0"
 napier = "2.7.1"
-
+realm = "2.0.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -61,6 +61,7 @@ coil-mp = { module = "io.coil-kt.coil3:coil", version.ref = "coil3" }
 compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose-foundation" }
 paging-compose-common = { module = "app.cash.paging:paging-compose-common", version.ref = "pagingCommonVersion" }
 napier = { module = "io.github.aakira:napier", version.ref = "napier" }
+realm-base = { module = "io.realm.kotlin:library-base", version.ref = "realm" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -69,3 +70,4 @@ jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+realm = { id = "io.realm.kotlin", version.ref = "realm" }

@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.myothiha.compose.movie.domain.models.Movie
 import com.myothiha.compose.movie.domain.repository.MovieRepository
 import com.myothiha.compose.movie.ui.ExceptionMapper
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.collectLatest
@@ -33,9 +34,7 @@ class HomeScreenViewModel(
         private set
 
     init {
-        retrieveMovies()
         syncMovies()
-        // fetchMovies()
     }
 
     /*private fun fetchMovies() {
@@ -69,6 +68,7 @@ class HomeScreenViewModel(
             uiState = uiState.copy(isLoading = true)
             runCatching {
                 movieRepository.syncMovies()
+                retrieveMovies()
             }.getOrElse {
                // uiState = uiState.copy(isLoading = false, errorMessage = exception.map(it))
                 retrieveMovies()
@@ -80,6 +80,7 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             movieRepository.retrieveMovies()
                 .collectLatest {
+                    //Napier.d("${it}", tag = "Movie")
                     uiState = uiState.copy(isLoading = false, data = it)
                     homeScreenUiState = uiState.toUiState()
                 }

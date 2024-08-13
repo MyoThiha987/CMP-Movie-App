@@ -74,8 +74,11 @@ fun MovieDetailScreen(
         }
 
         is DetailScreenState.Error -> {
-            Box {
-                Text(text = uiState.errorMessage)
+            Box(modifier = Modifier.fillMaxSize()) {
+                Text(
+                    text = uiState.errorMessage,
+                    modifier = Modifier.align(alignment = Alignment.Center)
+                )
             }
         }
     }

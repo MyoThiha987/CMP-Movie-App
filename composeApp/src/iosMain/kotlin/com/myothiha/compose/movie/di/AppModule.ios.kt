@@ -8,7 +8,6 @@ import com.myothiha.compose.movie.data.network.client.createHttpClient
 import com.myothiha.compose.movie.data.datasources.MovieNetworkDataSource
 import com.myothiha.compose.movie.data.network.datasources.MovieNetworkDataSourceImpl
 import com.myothiha.compose.movie.data.repository.MoviesRepositoryImpl
-import com.myothiha.compose.movie.database.movieDatabase
 import com.myothiha.compose.movie.domain.repository.MovieRepository
 import com.myothiha.compose.movie.ui.ExceptionMapper
 import com.myothiha.compose.movie.ui.ExceptionMapperImpl
@@ -23,7 +22,7 @@ import io.ktor.client.engine.darwin.Darwin
  * Created at 09/Aug/2024
  */
 actual val appModule = module {
-    single { movieDatabase() }
+    single { MovieDatabase() }
     single<MovieCacheDataSource> { MoviesCacheDataSourceImpl(get()) }
     single { createHttpClient(Darwin.create()) }
     single<MovieNetworkDataSource> { MovieNetworkDataSourceImpl(get()) }
