@@ -8,8 +8,6 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinxSerialization)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.room)
 }
 
 kotlin {
@@ -70,9 +68,6 @@ kotlin {
             implementation(libs.navigation.compose)
 
             implementation(libs.paging.compose.common)
-
-            implementation(libs.androidx.room.runtime)
-            implementation(libs.sqlite.bundled)
             implementation(libs.napier)
         }
         iosMain.dependencies {
@@ -120,44 +115,7 @@ android {
     }
 }
 
-room {
-    schemaDirectory("$projectDir/schemas")
-}
 
-ksp {
-    arg("room.schemaLocation", "$projectDir/schemas")
 
-    arg("room.incremental", "false")
-    // Other KSP configurations
-}
-
-/*dependencies{
-    ksp(libs.androidx.room.compiler)
-    add("kspAndroid", libs.androidx.room.compiler)
-    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
-    add("kspIosX64", libs.androidx.room.compiler)
-    add("kspIosArm64", libs.androidx.room.compiler)
-}*/
-
-//Room step5  KSP For processing Room annotations , Otherwise we will get Is Room annotation processor correctly configured? error
-dependencies {
-
-    ksp(libs.androidx.room.compiler)
-    /*add("kspAndroid", libs.androidx.room.compiler)
-    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
-    add("kspIosX64", libs.androidx.room.compiler)
-    add("kspIosArm64", libs.androidx.room.compiler)*/
-
-    // Update: https://issuetracker.google.com/u/0/issues/342905180
-    //add("kspCommonMainMetadata", "androidx.room:room-compiler:2.7.0-alpha04")
-
-}
-
-//Room step6 part 2 make all source sets to depend on kspCommonMainKotlinMetadata:  Update: https://issuetracker.google.com/u/0/issues/342905180
-/*tasks.withType<org.jetbrains.kotlin.gradle.dsl.KotlinCompile<*>>().configureEach {
-    if (name != "kspCommonMainKotlinMetadata" ) {
-        dependsOn("kspCommonMainKotlinMetadata")
-    }
-}*/
 
 
