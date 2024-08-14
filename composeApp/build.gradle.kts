@@ -13,6 +13,11 @@ plugins {
 }
 
 kotlin {
+
+    sourceSets.all {
+        languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
+    }
+
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
@@ -41,6 +46,8 @@ kotlin {
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
+            implementation(libs.androidx.room.runtime.android)
+
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -77,6 +84,7 @@ kotlin {
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
+
         }
     }
 }
@@ -120,11 +128,30 @@ android {
     }
 }
 
+ksp {
+    arg("room.schemaLocation", "${projectDir}/schemas")
+}
 room {
     schemaDirectory("$projectDir/schemas")
 }
 
-ksp {
+dependencies {
+    add("kspAndroid", libs.androidx.room.compiler)
+    //add("kspCommonMainMetadata", libs.androidx.room.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+    add("kspIosX64", libs.androidx.room.compiler)
+    add("kspIosArm64", libs.androidx.room.compiler)
+    //add("kspAndroid", libs.androidx.room.compiler)
+
+}
+
+/*tasks.withType<org.jetbrains.kotlin.gradle.dsl.KotlinCompile<*>>().configureEach {
+    if (name != "kspCommonMainKotlinMetadata" ) {
+        dependsOn("kspCommonMainKotlinMetadata")
+    }
+}*/
+
+/*ksp {
     arg("room.schemaLocation", "$projectDir/schemas")
 
     arg("room.incremental", "false")
@@ -134,12 +161,12 @@ ksp {
 dependencies {
 
     ksp(libs.androidx.room.compiler)
-    /*add("kspAndroid", libs.androidx.room.compiler)
+    *//*add("kspAndroid", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
     add("kspIosX64", libs.androidx.room.compiler)
-    add("kspIosArm64", libs.androidx.room.compiler)*/
+    add("kspIosArm64", libs.androidx.room.compiler)*//*
 
-}
+}*/
 
 
 

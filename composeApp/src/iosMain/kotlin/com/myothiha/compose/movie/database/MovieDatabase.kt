@@ -19,10 +19,10 @@ import platform.Foundation.NSUserDomainMask
 fun movieDatabase(): MovieDatabase {
     val dbFilePath = documentDirectory() + "/movie.db"
     return Room.databaseBuilder<MovieDatabase>(
-        name = dbFilePath,
-        factory = {MovieDatabase::class.instantiateImpl()}
+        name = dbFilePath
     )
         .setDriver(BundledSQLiteDriver())
+        .fallbackToDestructiveMigration(true)
         .setQueryCoroutineContext(Dispatchers.IO)
         .build()
 }

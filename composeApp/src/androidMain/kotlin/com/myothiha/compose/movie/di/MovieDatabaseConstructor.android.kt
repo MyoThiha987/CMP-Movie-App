@@ -1,7 +1,6 @@
 package com.myothiha.compose.movie.di
 
 import android.content.Context
-import androidx.room.RoomDatabaseConstructor
 import com.myothiha.compose.movie.data.cache.MovieDatabase
 import com.myothiha.compose.movie.database.movieDatabase
 
