@@ -7,10 +7,7 @@ import io.github.aakira.napier.Napier
 
 fun MainViewController() = ComposeUIViewController(configure = {
     KoinInitializer().init()
-    //MovieDatabaseConstructor().initialize()
     Napier.base(DebugAntilog())
-
-    //DatabaseInitializer().init()
 }) {
     App()
 }

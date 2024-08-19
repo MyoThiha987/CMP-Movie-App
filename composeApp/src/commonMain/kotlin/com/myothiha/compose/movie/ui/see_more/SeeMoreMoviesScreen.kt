@@ -52,13 +52,19 @@ import kotlinx.coroutines.launch
 import moviecomposemultiplatform.composeapp.generated.resources.Res
 import moviecomposemultiplatform.composeapp.generated.resources.ic_back_arrow
 import moviecomposemultiplatform.composeapp.generated.resources.ic_favourite
+import moviecomposemultiplatform.composeapp.generated.resources.lbl_nowplaying
+import moviecomposemultiplatform.composeapp.generated.resources.lbl_popular
+import moviecomposemultiplatform.composeapp.generated.resources.lbl_toprate
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.annotation.KoinExperimentalAPI
 
 /**
  * @Author Liam
  * Created at 11/Aug/2024
  */
+@OptIn(KoinExperimentalAPI::class)
 @Composable
 fun SeeMoreMoviesScreen(
     movieType: Int,
@@ -114,17 +120,19 @@ fun SeeMoreMoviesContent(
 ) {
     val data = data.collectAsLazyPagingItems()
     val title = when (movieType) {
-        2 -> "Now Playing"
-        3 -> "Top Rate"
-        4 -> "Popular"
-        else -> "Now Playing"
+        2 -> Res.string.lbl_nowplaying
+        3 -> Res.string.lbl_toprate
+        4 -> Res.string.lbl_popular
+        else -> Res.string.lbl_nowplaying
     }
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
         contentWindowInsets = WindowInsets(16.dp, 16.dp, 16.dp, 16.dp),
         topBar = {
-            TopAppBar(
+            androidx.compose.material.TopAppBar(
+                elevation = 1.dp,
+                backgroundColor = Color.White,
                 navigationIcon = {
                     IconButton(
                         onClick = onBackClick,
@@ -136,7 +144,7 @@ fun SeeMoreMoviesContent(
                         )
                     }
                 },
-                title = { Text(text = title) })
+                title = { Text(text = stringResource(resource = title), color = Color.Black) })
         },
         contentColor = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.5f),
     ) {
@@ -163,7 +171,7 @@ fun <T : Any> MoviesGridView(
     content: @Composable (T) -> Unit
 ) {
     LazyVerticalGrid(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(vertical = 16.dp),
         columns = GridCells.Fixed(2),
         state = state,
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -196,35 +204,6 @@ fun <T : Any> MoviesGridView(
                         }
                     }
 
-//                    refresh is LoadStateLoading -> {
-//                        item(span = {
-//                            GridItemSpan(maxLineSpan)
-//                        }) {
-//                            Box(
-//                                modifier = Modifier.fillMaxSize(),
-//                                contentAlignment = Alignment.Center
-//                            ) {
-//                                CircularProgressIndicator(
-//                                    modifier = Modifier
-//                                        .size(40.dp)
-//
-//                                )
-//                            }
-//                        }
-//                    }
-
-                    /*append is LoadStateNotLoading -> {
-                        item(span = {
-                            GridItemSpan(maxLineSpan)
-                        }) {
-                            ErrorMessage(
-                                message = "No Internet Connection.",
-                                onClickRetry = { data.retry() },
-                                modifier = Modifier.fillMaxSize()
-                            )
-                        }
-                    }*/
-
                     append is LoadStateLoading -> {
                         item(span = {
                             GridItemSpan(maxLineSpan)
@@ -239,30 +218,6 @@ fun <T : Any> MoviesGridView(
                             }
                         }
                     }
-
-//                    refresh is LoadStateError -> {
-//                        item(
-//                            span = {
-//                                GridItemSpan(maxLineSpan)
-//                            }
-//                        ) {
-//                            ErrorMessage(
-//                                message = "No Internet Connection",
-//                                onClickRetry = { data.retry() },
-//                            )
-//                        }
-//                    }
-//
-//                    append is LoadStateError -> {
-//                        item(span = {
-//                            GridItemSpan(maxLineSpan)
-//                        }) {
-//                            ErrorMessage(
-//                                message = "No Internet Connection",
-//                                onClickRetry = { data.retry() },
-//                            )
-//                        }
-//                    }
                 }
             }
         }
@@ -303,8 +258,8 @@ fun MovieGridItemView(
                 text = data.originalTitle,
                 fontSize = 18.sp,
                 maxLines = 1,
-                lineHeight = 21.sp,
-                fontWeight = FontWeight(200)
+                //lineHeight = 21.sp,
+                fontWeight = FontWeight.Bold
             )
 
         }

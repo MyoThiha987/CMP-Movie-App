@@ -1,12 +1,10 @@
-package com.myothiha.compose.movie.data.cache
+package com.myothiha.compose.movie.data.cache.database
 
 import com.myothiha.compose.movie.data.cache.entity.MovieEntity
-import io.github.aakira.napier.Napier
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 import io.realm.kotlin.delete
 import io.realm.kotlin.ext.query
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -37,7 +35,10 @@ class MovieDatabase() {
 
     suspend fun saveMovies(data: List<MovieEntity>) {
         realm!!.write {
-            delete<MovieEntity>()
+
+            val query = this.query<MovieEntity>()
+            delete(query)
+
             data.forEach {
                 copyToRealm(it)
             }
@@ -52,12 +53,20 @@ class MovieDatabase() {
             .map { it.list.toList() }
     }
 
-    suspend fun deleteMovies() {
+    suspend fun favouriteMovie(movieId: Int, movieType: Int) {
         realm!!.write {
-            delete<MovieEntity>()
-        }
-        /*coroutineScope {
+            val query =
+                query<MovieEntity>("id == $0 AND movieType == $1", movieId, movieType).find()
+                    .first()
 
-        }*/
+            query.isLiked = query.isLiked.not()
+        }
     }
+
+    /*suspend fun deleteMovies(){
+        realm!!.write {
+            val query = this.query<MovieEntity>()
+            delete(query)
+        }
+    }*/
 }

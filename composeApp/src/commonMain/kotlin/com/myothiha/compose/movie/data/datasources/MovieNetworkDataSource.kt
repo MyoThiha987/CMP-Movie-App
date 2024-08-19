@@ -18,5 +18,5 @@ interface MovieNetworkDataSource {
     suspend fun fetchMovieDetail(movieId: Int): MovieDetailDto
     suspend fun fetchCredits(movieId: Int): CreditDto
     fun fetchPagingMovies(movieType: Int): Flow<PagingData<MovieDto>>
-
+    fun searchMovies(query: String): Flow<PagingData<MovieDto>>
 }

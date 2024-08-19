@@ -1,0 +1,26 @@
+<resources>
+    <string name="greeting">Hi, Myo Thiha</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="language_en">English</string>
+    <string name="language_myanmar">Myanmar</string>
+    <string name="lbl_home">Home</string>
+    <string name="lbl_bookmark">Favourite</string>
+    <string name="lbl_setting">Setting</string>
+    <string name="lbl_nowplaying">NowPlaying</string>
+    <string name="lbl_toprate">TopRate</string>
+    <string name="lbl_popular">Popular</string>
+    <string name="lbl_seemore">View All</string>
+    <string name="lbl_theme">DayNight Mode</string>
+    <string name="lbl_language">Language</string>
+    <string name="lbl_general">General</string>
+    <string name="lbl_security">Security</string>
+    <string name="lbl_fingerprint">FingerPrint</string>
+    <string name="lbl_error">Fetch Error</string>
+    <string name="lbl_retry">Retry</string>
+    <string name="lbl_favourite">Favourite Movies</string>
+    <string name="lbl_search">Search Movies</string>
+    <string name="lbl_search_hint">Enter movie name</string>
+    <string name="lbl_no_favourite_data">There is no favourite movies</string>
+</resources>

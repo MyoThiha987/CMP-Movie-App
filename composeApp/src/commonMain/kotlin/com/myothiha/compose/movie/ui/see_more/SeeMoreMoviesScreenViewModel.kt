@@ -1,5 +1,6 @@
 package com.myothiha.compose.movie.ui.see_more
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -46,10 +47,13 @@ class SeeMoreMoviesScreenViewModel(private val repository: MovieRepository) : Vi
 
 sealed class SeeMoreScreenState {
     data object Loading : SeeMoreScreenState()
+
     data class Error(val errorMessage: String) : SeeMoreScreenState()
+
     data class Success(val data: Flow<PagingData<Movie>>?) : SeeMoreScreenState()
 }
 
+@Immutable
 data class SeeMoreState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,

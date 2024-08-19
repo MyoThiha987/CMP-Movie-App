@@ -4,6 +4,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,39 +33,68 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonColors
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.LocalPlatformContext
 import coil3.compose.SubcomposeAsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.myothiha.compose.movie.Language
+import com.myothiha.compose.movie.di.changeLang
 import com.myothiha.compose.movie.domain.models.Movie
 import com.myothiha.compose.movie.ui.components.CarouselMovieView
 import io.github.aakira.napier.Napier
+import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json.Default.configuration
 import moviecomposemultiplatform.composeapp.generated.resources.Res
+import moviecomposemultiplatform.composeapp.generated.resources.greeting
 import moviecomposemultiplatform.composeapp.generated.resources.ic_favourite
+import moviecomposemultiplatform.composeapp.generated.resources.ic_language
 import moviecomposemultiplatform.composeapp.generated.resources.ic_notification
 import moviecomposemultiplatform.composeapp.generated.resources.ic_search
+import moviecomposemultiplatform.composeapp.generated.resources.language_en
+import moviecomposemultiplatform.composeapp.generated.resources.language_myanmar
+import moviecomposemultiplatform.composeapp.generated.resources.lbl_nowplaying
+import moviecomposemultiplatform.composeapp.generated.resources.lbl_popular
+import moviecomposemultiplatform.composeapp.generated.resources.lbl_seemore
+import moviecomposemultiplatform.composeapp.generated.resources.lbl_toprate
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -79,29 +110,87 @@ import org.koin.core.annotation.KoinExperimentalAPI
 fun HomeScreen(
     padding: PaddingValues,
     onClickDetail: (Int) -> Unit,
-    onClickSeeMore: (Int) -> Unit
+    onClickSeeMore: (Int) -> Unit,
+    onClickSearch: () -> Unit
 ) {
-    val viewModel = koinViewModel<HomeScreenViewModel>()
-val uiState = viewModel.homeScreenUiState
-    when (uiState) {
-        is HomeScreenState.Loading -> LoadingView()
-        is HomeScreenState.Success -> {
-            MovieListView(
-                data = uiState.data,
-                padding = padding,
-                onClickSeeMore = {
-                    onClickSeeMore(it)
-                },
-                onClickDetail = {
-                    onClickDetail(it)
-                }
-            )
-        }
 
-        is HomeScreenState.Error -> {
-            Text(uiState.errorMessage)
+    val viewModel = koinViewModel<HomeScreenViewModel>()
+
+    val uiState = viewModel.homeScreenUiState
+    val languageState = viewModel.languageState
+    var showBottomSheet by remember {
+        mutableStateOf(false)
+    }
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        contentWindowInsets = WindowInsets(bottom = 90.dp),
+        topBar = {
+            TopAppBar(
+                elevation = 1.dp,
+                backgroundColor = Color.White,
+                title = {
+                    androidx.compose.material3.Text(
+                        text = stringResource(Res.string.greeting),
+                        color = Color.Black
+                    )
+                }, actions = {
+                    IconButton(onClick = { onClickSearch() }) {
+                        Icon(
+                            painter = painterResource(resource = Res.drawable.ic_search),
+                            tint = Color.Black,
+                            contentDescription = ""
+                        )
+                    }
+
+                    IconButton(onClick = { }) {
+                        Icon(
+                            painter = painterResource(resource = Res.drawable.ic_notification),
+                            tint = Color.Black,
+                            contentDescription = ""
+                        )
+                    }
+
+                    IconButton(onClick = { showBottomSheet = true }) {
+                        Icon(
+                            painter = painterResource(resource = Res.drawable.ic_language),
+                            tint = Color.Black,
+                            contentDescription = ""
+                        )
+                    }
+                })
+        }
+    ) { it ->
+        ShowLanguageChooseSheet(
+            showSheet = { showBottomSheet = it },
+            showBottomSheet = showBottomSheet,
+            language = languageState.language,
+            uiEvent = viewModel::onEvent
+        )
+
+        when (uiState) {
+            is HomeScreenState.Loading -> LoadingView()
+            is HomeScreenState.Success -> {
+
+                MovieListView(
+                    data = uiState.data,
+                    padding = it,
+                    onClickSeeMore = {
+                        onClickSeeMore(it)
+                    },
+                    onClickDetail = {
+                        onClickDetail(it)
+                    },
+                    uiEvent = viewModel::onEvent
+                )
+            }
+
+            is HomeScreenState.Error -> {
+                Text(uiState.errorMessage)
+            }
         }
     }
+
 
 }
 
@@ -117,132 +206,125 @@ fun LoadingView() {
 fun MovieListView(
     padding: PaddingValues,
     data: List<Movie>,
+    uiEvent: (ScreenUiEvent) -> Unit,
     onClickSeeMore: (Int) -> Unit,
-    onClickSave: (Int, Boolean, Int) -> Unit = { _, _, _ -> },
     onClickDetail: (Int) -> Unit
 
 ) {
 
-    val upcomingMovies by remember {
-        mutableStateOf(data.filter { it.movieType == 1 }.toMutableList())
-    }
-
-    val nowPlayingMovies by remember {
-        mutableStateOf(data.filter { it.movieType == 2 }.toMutableList())
-    }
-
-    val popularMovies by remember {
-        mutableStateOf(data.filter { it.movieType == 3 }.toMutableList())
-    }
-
-    val topRatedMovies by remember {
-        mutableStateOf(data.filter { it.movieType == 4 }.toMutableList())
-    }
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                elevation = 0.dp,
-                backgroundColor = Color.White,
-                title = {
-                    androidx.compose.material3.Text(
-                        text = "Hi, Myo Thiha",
-                        color = Color.Black
-                    )
-                }, actions = {
-                    Icon(
-                        modifier = Modifier
-                            .size(32.dp),
-                        painter = painterResource(resource = Res.drawable.ic_search),
-                        tint = MaterialTheme.colorScheme.primary,
-                        contentDescription = ""
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Icon(
-                        modifier = Modifier.size(32.dp),
-                        painter = painterResource(resource = Res.drawable.ic_notification),
-                        tint = MaterialTheme.colorScheme.primary,
-                        contentDescription = ""
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                })
-        }
+    LazyColumn(
+        modifier = Modifier.fillMaxSize()
+            .padding(start = 0.dp, top = 0.dp, end = 0.dp, bottom = 0.dp)
+            .background(color = Color.Gray.copy(alpha = 0.1f)),
+        contentPadding = padding
     ) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(it)
-                .background(color = Color.Gray.copy(alpha = 0.1f))
-        ) {
-            item {
-                CarouselMovieView(
-                    data = upcomingMovies,
-                    modifier = Modifier.padding(vertical = 12.dp)
-                )
-                if (nowPlayingMovies.isNotEmpty()) CategoryAndContent(
-                    text = "Now Playing",
-                    movieType = 2,
-                    onClickSeeMore = {
-                        onClickSeeMore(it)
-                    }, content = {
-                        HorizontalItemView(
-                            arrangement = Arrangement.spacedBy(12.dp),
-                            data = nowPlayingMovies,
-                            content = {
-                                MovieItemSmallView(
-                                    data = it,
-                                    onClickDetail = {
-                                        onClickDetail(it)
-                                    },
-                                    onClickSave = onClickSave
+        item {
+            CarouselMovieView(
+                data = data.filter { it.movieType == 1 }.toMutableList(),
+                modifier = Modifier.padding(vertical = 12.dp)
+            )
 
-                                )
-                            }
-                        )
-                    }
-                )
-
-                if (topRatedMovies.isNotEmpty()) CategoryAndContent(
-                    text = "Top Rate",
-                    movieType = 3,
-                    onClickSeeMore = {
-                        onClickSeeMore(it)
-                    },
-                    content = {
-                        HorizontalLargeItemView(
-                            topRatedMovies,
-                            isFling = true,
-                            onClickDetail = {
-                                onClickDetail(it)
-                            }
-                        )
-                    }
-                )
-
-                if (popularMovies.isNotEmpty()) {
-                    CategoryAndContent(
-                        text = "Popular",
-                        movieType = 4,
-                        onClickSeeMore = {
-                            onClickSeeMore(it)
-                        },
+            CategoryAndContent(
+                text = stringResource(Res.string.lbl_nowplaying),
+                movieType = 2,
+                onClickSeeMore = {
+                    onClickSeeMore(it)
+                }, content = {
+                    HorizontalItemView(
+                        arrangement = Arrangement.spacedBy(12.dp),
+                        data = data.filter { it.movieType == 2 }.toMutableList(),
                         content = {
-                            HorizontalItemView(
-                                arrangement = Arrangement.spacedBy(16.dp),
-                                data = popularMovies,
-                                content = {
-                                    MovieItemMediumView(
-                                        data = it,
-                                        onClickDetail = {
-                                            onClickDetail(it)
-                                        })
+                            MovieItemSmallView(
+                                data = it,
+                                onClickDetail = {
+                                    onClickDetail(it)
+                                },
+                                onClickSave = { movieId, movieType ->
+                                    uiEvent(
+                                        ScreenUiEvent.onSaveMovie(
+                                            movieId = movieId,
+                                            movieType = movieType
+                                        )
+                                    )
                                 }
+
                             )
                         }
                     )
                 }
-            }
+            )
+
+            CategoryAndContent(
+                text = stringResource(Res.string.lbl_popular),
+                movieType = 4,
+                onClickSeeMore = {
+                    onClickSeeMore(it)
+                },
+                content = {
+                    HorizontalItemView(
+                        arrangement = Arrangement.spacedBy(16.dp),
+                        data = data.filter { it.movieType == 4 }.toMutableList(),
+                        content = {
+                            MovieItemMediumView(
+                                data = it,
+                                onClickDetail = {
+                                    onClickDetail(it)
+                                })
+                        }
+                    )
+                }
+            )
+
+            CategoryAndContent(
+                text = stringResource(Res.string.lbl_toprate),
+                movieType = 3,
+                onClickSeeMore = {
+                    onClickSeeMore(it)
+                },
+                content = {
+                    HorizontalLargeItemView(
+                        data.filter { it.movieType == 3 }.toMutableList(),
+                        isFling = true,
+                        onClickDetail = {
+                            onClickDetail(it)
+                        }
+                    )
+                }
+            )
         }
     }
 
+}
+
+@Composable
+fun ShowLanguageChooseSheet(
+    showBottomSheet: Boolean,
+    showSheet: (Boolean) -> Unit,
+    language: String,
+    uiEvent: (ScreenUiEvent) -> Unit
+) {
+    val scope = rememberCoroutineScope()
+
+    if (showBottomSheet) {
+        CustomBottomSheet(
+            content = {
+                LanguageList(
+                    language = language,
+                    onSelectLanguage = {
+                        scope.launch {
+                            uiEvent(
+                                ScreenUiEvent.onSelectLanguage(
+                                    language = it
+                                )
+                            )
+                            showSheet(false)
+                        }
+                    }
+                )
+            }) {
+            showSheet(false)
+        }
+    }
 }
 
 @Composable
@@ -262,18 +344,23 @@ fun CategoryAndContent(
         ) {
             androidx.compose.material3.Text(
                 text = text,
-                style = MaterialTheme.typography.titleMedium.copy(fontSize = 16.sp),
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                ),
                 modifier = Modifier
                     .paddingFromBaseline(top = 16.dp)
                     .padding(horizontal = 16.dp)
             )
-            Text(
-                text = "View all",
+            androidx.compose.material3.Text(
+                text = stringResource(Res.string.lbl_seemore),
                 style = MaterialTheme.typography.titleMedium.copy(fontSize = 12.sp),
                 modifier = Modifier
-                    .noRippleClickable { onClickSeeMore(movieType) }
+                    .bouncingClickable { onClickSeeMore(movieType) }
                     .paddingFromBaseline(top = 16.dp)
-                    .padding(horizontal = 16.dp)
+                    .padding(end = 16.dp),
+                maxLines = 1,
+                //overflow = TextOverflow.Visible
             )
         }
 
@@ -281,7 +368,7 @@ fun CategoryAndContent(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalStdlibApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun <T : Any> HorizontalItemView(
     data: List<T>,
@@ -310,7 +397,7 @@ fun <T : Any> HorizontalItemView(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalStdlibApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HorizontalLargeItemView(
     data: List<Movie>,
@@ -431,7 +518,7 @@ fun MovieItemSmallView(
     modifier: Modifier = Modifier,
     data: Movie,
     onClickDetail: (Int) -> Unit,
-    onClickSave: (Int, Boolean, Int) -> Unit
+    onClickSave: (Int, Int) -> Unit
 ) {
     Box(modifier = modifier.width(180.dp)) {
         Column {
@@ -454,7 +541,6 @@ fun MovieItemSmallView(
                 fontSize = 16.sp,
                 maxLines = 1,
                 lineHeight = 18.sp,
-                fontWeight = FontWeight(200)
             )
 
         }
@@ -464,8 +550,8 @@ fun MovieItemSmallView(
                 .padding(8.dp)
                 .size(32.dp)
                 .align(alignment = Alignment.TopEnd)
-                .noRippleClickable {
-                    onClickSave(data.id, data.isLiked, data.movieType)
+                .bouncingClickable {
+                    onClickSave(data.id, data.movieType)
                 },
             painter = painterResource(Res.drawable.ic_favourite),
             contentDescription = null,
@@ -505,4 +591,90 @@ fun MovieItemMediumView(
             lineHeight = 18.sp
         )
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CustomBottomSheet(
+    content: @Composable () -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    ModalBottomSheet(
+        sheetState = sheetState,
+        onDismissRequest = { onDismissRequest() },
+        windowInsets = WindowInsets(0, 0, 0, 0),
+        dragHandle = { BottomSheetDefaults.DragHandle() },
+    ) {
+        content()
+    }
+}
+
+@Composable
+fun LanguageList(
+    language: String,
+    onSelectLanguage: (String) -> Unit
+) {
+    LazyColumn(modifier = Modifier.padding(bottom = 16.dp)) {
+        item {
+            RadioButtonText(
+                textRes = stringResource(Res.string.language_en),
+                isSelected = language == Language.English.language,
+                onClick = { onSelectLanguage(Language.English.language) }
+            )
+            RadioButtonText(
+                textRes = stringResource(Res.string.language_myanmar),
+                isSelected = language == Language.Myanmar.language,
+                onClick = {
+                    onSelectLanguage(Language.Myanmar.language)
+                }
+
+            )
+        }
+    }
+}
+
+@Composable
+fun RadioButtonText(
+    textRes: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    colors: RadioButtonColors = RadioButtonDefaults.colors()
+) {
+    Row(
+        modifier = modifier
+            .selectable(
+                selected = isSelected,
+                role = Role.RadioButton,
+                onClick = onClick
+            )
+            .padding(horizontal = 16.dp, vertical = 10.dp)
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        SingleLineText(text = textRes, shouldUseMarquee = true)
+        RadioButton(selected = isSelected, onClick = null, colors = colors)
+
+
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun SingleLineText(
+    text: String,
+    modifier: Modifier = Modifier,
+    shouldUseMarquee: Boolean = false,
+    //color: Color = Color.Unspecified,
+    style: TextStyle = TextStyle(color = MaterialTheme.colorScheme.onSurface)
+) {
+    androidx.compose.material3.Text(
+        modifier = modifier.then(if (shouldUseMarquee) Modifier.basicMarquee() else Modifier),
+        text = text,
+        // color = color,
+        overflow = TextOverflow.Ellipsis,
+        maxLines = 1,
+        style = style
+    )
 }

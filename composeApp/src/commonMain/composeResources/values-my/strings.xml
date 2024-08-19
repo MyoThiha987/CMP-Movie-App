@@ -1,0 +1,26 @@
+<resources>
+    <string name="greeting">မင်္ဂလာပါ, မျိုးသီဟ</string>
+    <string name="language_en">အင်္ဂလိပ်</string>
+    <string name="language_myanmar">မြန်မာ</string>
+    <string name="theme_system">အလိုအလျောက်</string>
+    <string name="theme_light">နေ့</string>
+    <string name="theme_dark">ည</string>
+    <string name="lbl_home">မူလနေရာ</string>
+    <string name="lbl_bookmark">ကြိုက်နှစ်သက်ရာ</string>
+    <string name="lbl_setting">အပြင်အဆင်</string>
+    <string name="lbl_nowplaying">ယခုပြသနေသော ဇာတ်ကားများ</string>
+    <string name="lbl_toprate">လူကြည့်များသော ဇာတ်ကားများ</string>
+    <string name="lbl_popular">လူကြိုက်များသော ဇာတ်ကားများ</string>
+    <string name="lbl_seemore">အားလုံးကြည့်ရန်</string>
+    <string name="lbl_theme">နေ့ညစနစ်</string>
+    <string name="lbl_language">ဘာသာစကား</string>
+    <string name="lbl_general">အထွေထွေ</string>
+    <string name="lbl_security">လုံခြုံရေး</string>
+    <string name="lbl_fingerprint">လက်ဗွေစနစ်</string>
+    <string name="lbl_error">ဒေတာမရရှိပါ။</string>
+    <string name="lbl_retry">ပြန်ကြိုးစားမယ်</string>
+    <string name="lbl_favourite">ကြိုက်နှစ်သက်သော ဇာတ်ကားများ</string>
+    <string name="lbl_search">ဇာတ်ကားများရှာရန်</string>
+    <string name="lbl_search_hint">ဇာတ်ကားနာမည်ထည့်ရန်</string>
+    <string name="lbl_no_favourite_data">အကြိုက်ဆုံးရုပ်ရှင်များ မရှိပါ။</string>
+</resources>

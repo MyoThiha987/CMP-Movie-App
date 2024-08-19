@@ -15,6 +15,7 @@ import com.myothiha.data.network.response.DataResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import io.ktor.client.request.parameter
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -86,4 +87,19 @@ class MovieNetworkDataSourceImpl(private val client: HttpClient) : MovieNetworkD
             }).flow
     }
 
+    override fun searchMovies(query: String): Flow<PagingData<MovieDto>> {
+        return Pager(config = PagingConfig(
+            pageSize = 10,
+            initialLoadSize = 10,
+            enablePlaceholders = false
+        ), pagingSourceFactory = {
+
+            MoviesPagingSource { page, pageSize ->
+                client.get {
+                    pathUrl(Constants.GET_SEARCH, page = page)
+                    parameter("query", query)
+                }.body<DataResponse<MovieDto>>()
+            }
+        }).flow
+    }
 }

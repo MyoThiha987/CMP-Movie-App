@@ -18,6 +18,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -39,7 +40,9 @@ fun MovieTopAppBar(
     onSearchClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    TopAppBar(
+    androidx.compose.material.TopAppBar(
+        elevation = 1.dp,
+        backgroundColor = Color.White,
         title = {
             Icon(
                 modifier = Modifier.padding(end = 16.dp).noRippleClickable {
@@ -60,10 +63,7 @@ fun MovieTopAppBar(
                     tint = MaterialTheme.colorScheme.onSurface
                 )
             }*/
-        },
-        colors = TopAppBarDefaults.largeTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-        ),
+        }
     )
 }
 

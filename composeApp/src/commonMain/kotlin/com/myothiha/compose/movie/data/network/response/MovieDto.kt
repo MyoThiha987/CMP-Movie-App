@@ -40,7 +40,7 @@ data class MovieDto(
     val isLiked: Boolean?
 )
 
-fun MovieDto.toDomain(movieType: Int): Movie {
+fun MovieDto.toDomain(movieType: Int =0): Movie {
     this.apply {
         return Movie(
             id = id.orZero(),

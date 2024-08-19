@@ -5,13 +5,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.myothiha.compose.movie.domain.models.Movie
+import com.myothiha.compose.movie.domain.repository.LanguageSettingRepository
 import com.myothiha.compose.movie.domain.repository.MovieRepository
 import com.myothiha.compose.movie.ui.ExceptionMapper
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.compose.getKoin
 import org.koin.core.component.KoinComponent
@@ -22,55 +26,34 @@ import org.koin.core.component.inject
  * Created at 09/Aug/2024
  */
 class HomeScreenViewModel(
-    private val movieRepository: MovieRepository
+    private val movieRepository: MovieRepository,
+    private val languageSettingRepository: LanguageSettingRepository
 ) : ViewModel(), KoinComponent {
 
-
     private val exception: ExceptionMapper by inject()
+
     var uiState by mutableStateOf(HomeState())
+        private set
+
+    var languageState by mutableStateOf(LanguageState())
         private set
 
     var homeScreenUiState by mutableStateOf<HomeScreenState>(HomeScreenState.Loading)
         private set
 
     init {
+        loadSelectedLanguage()
         syncMovies()
+        retrieveMovies()
     }
-
-    /*private fun fetchMovies() {
-        uiState = uiState.copy(isLoading = true)
-        viewModelScope.launch {
-            coroutineScope {
-                runCatching {
-                    val data = movieRepository.fetchUpcomingMovies()
-                    *//*val upcomingMovies = async { movieRepository.fetchUpcomingMovies() }.await()
-                    val nowPlayingMovies =
-                        async { movieRepository.fetchNowPlayingMovies(page = 1) }.await()
-                    val popularMovies =
-                        async { movieRepository.fetchPopularMovies(page = 1) }.await()
-                    val topRatedMovies =
-                        async { movieRepository.fetchTopRatedMovies(page = 1) }.await()
-                    val result = upcomingMovies + nowPlayingMovies + popularMovies + topRatedMovies*//*
-                    uiState = uiState.copy(isLoading = false, data = data)
-
-                }.getOrElse {
-                    uiState = uiState.copy(isLoading = false, errorMessage = exception.map(it))
-                }
-
-                homeScreenUiState = uiState.toUiState()
-            }
-        }
-
-    }*/
 
     private fun syncMovies() {
         viewModelScope.launch {
             uiState = uiState.copy(isLoading = true)
             runCatching {
                 movieRepository.syncMovies()
-                retrieveMovies()
+                //retrieveMovies()
             }.getOrElse {
-               // uiState = uiState.copy(isLoading = false, errorMessage = exception.map(it))
                 retrieveMovies()
             }
         }
@@ -80,29 +63,60 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             movieRepository.retrieveMovies()
                 .collectLatest {
-                    //Napier.d("${it}", tag = "Movie")
                     uiState = uiState.copy(isLoading = false, data = it)
                     homeScreenUiState = uiState.toUiState()
                 }
         }
     }
+
+    private fun updateSaveMovie(movieId: Int, movieType: Int) {
+        viewModelScope.launch {
+            movieRepository.updateSavedMovie(movieId = movieId, movieType = movieType)
+        }
+    }
+
+    fun onEvent(event: ScreenUiEvent) {
+        when (event) {
+            is ScreenUiEvent.onSelectLanguage -> saveSelectedLanguage(
+                language = event.language
+            )
+
+            is ScreenUiEvent.onSaveMovie -> {
+                updateSaveMovie(movieId = event.movieId, movieType = event.movieType)
+            }
+        }
+    }
+
+    private fun saveSelectedLanguage(language: String) {
+        viewModelScope.launch {
+            languageSettingRepository.saveLanguage(language = language)
+        }
+    }
+
+    private fun loadSelectedLanguage() {
+        viewModelScope.launch {
+            languageSettingRepository.readLanguage().collectLatest {
+                languageState =
+                    languageState.copy(language = it)
+            }
+        }
+    }
 }
 
-private suspend fun fetchMoviesSafely(fetchOperation: suspend () -> List<Movie>): List<Movie> {
-    return runCatching {
-        fetchOperation()
-    }.getOrElse {
-        throw it // Rethrow the exception to handle it in the main fetchMovies method
-    }
+sealed class ScreenUiEvent {
+    data class onSelectLanguage(val language: String) : ScreenUiEvent()
+    data class onSaveMovie(val movieId: Int, val movieType: Int) : ScreenUiEvent()
 }
 
 sealed class HomeScreenState {
     data object Loading : HomeScreenState()
     data class Error(val errorMessage: String) : HomeScreenState()
-    data class Success(
-        val data: List<Movie>
-    ) : HomeScreenState()
+    data class Success(val data: List<Movie>) : HomeScreenState()
 }
+
+data class LanguageState(
+    val language: String = "en"
+)
 
 data class HomeState(
     val isLoading: Boolean = false,

@@ -37,7 +37,8 @@ class MoviesRepositoryImpl(
             }.await()
 
             val topRated = async {
-                dataSource.fetchTopRatedMovies(page = 1).map { it.toEntity(movieCategory = TOP_RATED) }
+                dataSource.fetchTopRatedMovies(page = 1)
+                    .map { it.toEntity(movieCategory = TOP_RATED) }
             }.await()
 
             val nowPlaying = async {
@@ -48,38 +49,11 @@ class MoviesRepositoryImpl(
             val data = upComing + popular + topRated + nowPlaying
             cacheDataSource.saveMovies(data)
         }
-        /*val upComingMoviesMovies = dataSource.fetchUpcomingMovies()
-
-        Napier.d("${upComingMoviesMovies}", tag = "dbb")
-
-        cacheDataSource.saveMovies(
-            data = upComingMoviesMovies.map { it.toEntity(movieType = UPCOMING) },
-            movieType = UPCOMING
-        )
-
-        val nowPlayingMovies = dataSource.fetchNowPlayingMovies(page = 1)
-        cacheDataSource.saveMovies(
-            data = nowPlayingMovies.map { it.toEntity(movieType = NOW_PLAYING) },
-            movieType = NOW_PLAYING
-        )
-
-        val topRatedMovies = dataSource.fetchTopRatedMovies(page = 1)
-        cacheDataSource.saveMovies(
-            data = topRatedMovies.map { it.toEntity(movieType = TOP_RATED) },
-            movieType = TOP_RATED
-        )
-
-        val popularMovies = dataSource.fetchPopularMovies(page = 1)
-        cacheDataSource.saveMovies(
-            data = popularMovies.map { it.toEntity(movieType = POPULAR) },
-            movieType = POPULAR
-        )*/
     }
 
     override fun retrieveMovies(): Flow<List<Movie>> {
         return cacheDataSource.retrieveCacheMovies()
     }
-
 
     override suspend fun fetchUpcomingMovies(): List<Movie> {
         return coroutineScope {
@@ -120,5 +94,16 @@ class MoviesRepositoryImpl(
             .map { pagingData ->
                 pagingData.map { it.toDomain(movieType = movieType) }
             }
+    }
+
+    override fun searchMovies(query: String): Flow<PagingData<Movie>> {
+        return dataSource.searchMovies(query = query)
+            .map { pagingData ->
+                pagingData.map { it.toDomain() }
+            }
+    }
+
+    override suspend fun updateSavedMovie(movieId: Int, movieType: Int) {
+        cacheDataSource.updateSavedMovie(movieId = movieId, movieType = movieType)
     }
 }

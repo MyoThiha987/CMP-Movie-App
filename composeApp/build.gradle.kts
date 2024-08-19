@@ -71,6 +71,8 @@ kotlin {
             implementation(libs.paging.compose.common)
             implementation(libs.napier)
             implementation(libs.realm.base)
+            implementation(libs.datastore.preferences)
+            //implementation(libs.blur)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
@@ -115,6 +117,9 @@ android {
         debugImplementation(compose.uiTooling)
         implementation(libs.compose.foundation)
     }
+}
+dependencies {
+    implementation(libs.androidx.annotation.jvm)
 }
 
 
